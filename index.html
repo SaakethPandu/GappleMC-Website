@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GappleMC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Minecraft&family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #e74c3c;
+            --primary-dark: #c0392b;
+            --primary-light: rgba(231, 76, 60, 0.1);
+            --secondary: #f39c12;
+            --secondary-dark: #e67e22;
+            --accent: #9b59b6;
+            --accent-dark: #8e44ad;
+            --dark: #1a1a1a;
+            --darker: #111;
+            --light: #ecf0f1;
+            --gray: #bdc3c7;
+            --dark-gray: #7f8c8d;
+            
+            --glow: 0 0 15px var(--primary);
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--darker);
+            color: var(--light);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        
+        /* Particle Background */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            background-color: var(--darker);
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--dark);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+        
+        /* Typography */
+        h1, h2, h3, h4 {
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        
+        .minecraft-font {
+            font-family: 'Minecraft', sans-serif;
+            text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.5);
+            letter-spacing: 1px;
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary);
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            margin: 0.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 2px solid transparent;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--secondary-dark);
+        }
+        
+        .btn-accent {
+            background-color: var(--accent);
+        }
+        
+        .btn-accent:hover {
+            background-color: var(--accent-dark);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        /* Header */
+        header {
+            background-color: rgba(26, 26, 26, 0.95);
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        header.scrolled {
+            padding: 0.5rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-family: 'Minecraft', sans-serif;
+            font-size: 2.2rem;
+            color: var(--primary);
+            text-shadow: 2px 2px 0 #000;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo span {
+            color: var(--secondary);
+        }
+        
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 1.5rem;
+            position: relative;
+        }
+        
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-links a i {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: var(--transition);
+        }
+        
+        .nav-links a:hover::after {
+            width: 70%;
+            left: 15%;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 1001;
+        }
+        
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            min-height: 800px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.1) 0%, rgba(243, 156, 18, 0.1) 100%);
+            z-index: -1;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        .hero h1 {
+            font-family: 'Minecraft', sans-serif;
+            font-size: 4.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            text-shadow: 4px 4px 0 rgba(0, 0, 0, 0.7);
+            line-height: 1.1;
+        }
+        
+        .hero p {
+            font-size: 1.4rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.9;
+        }
+        
+        .server-ip {
+            background-color: rgba(26, 26, 26, 0.8);
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 1.5rem;
+            margin-bottom: 2.5rem;
+            border: 2px solid var(--primary);
+            box-shadow: var(--glow);
+            display: inline-block;
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .server-ip:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px var(--primary);
+        }
+        
+        .server-ip::after {
+            content: 'Click to copy';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .server-ip:hover::after {
+            opacity: 1;
+        }
+        
+        .hero-btns {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .scroll-down {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--light);
+            font-size: 1.5rem;
+            animation: bounce 2s infinite;
+            cursor: pointer;
+            z-index: 10;
+        }
+        
+        /* Sections */
+        section {
+            padding: 6rem 0;
+            position: relative;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 4rem;
+            font-family: 'Minecraft', sans-serif;
+            font-size: 3rem;
+            color: var(--primary);
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+        
+        /* Features Section */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .feature-card {
+            background-color: rgba(26, 26, 26, 0.7);
+            padding: 2.5rem 2rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: var(--transition);
+            border-bottom: 4px solid var(--primary);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            transform: translateY(50px);
+            opacity: 0;
+            animation: fadeInUp 0.6s forwards;
+        }
+        
+        .feature-card:nth-child(1) { animation-delay: 0.2s; }
+        .feature-card:nth-child(2) { animation-delay: 0.4s; }
+        .feature-card:nth-child(3) { animation-delay: 0.6s; }
+        .feature-card:nth-child(4) { animation-delay: 0.8s; }
+        .feature-card:nth-child(5) { animation-delay: 1s; }
+        .feature-card:nth-child(6) { animation-delay: 1.2s; }
+        
+        .feature-card:hover {
+            transform: translateY(-10px) !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            background-color: rgba(26, 26, 26, 0.9);
+        }
+        
+        .feature-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            background: var(--primary-light);
+            width: 80px;
+            height: 80px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        .feature-card h3 {
+            margin-bottom: 1.2rem;
+            font-size: 1.6rem;
+        }
+        
+        .feature-card p {
+            color: var(--gray);
+        }
+        
+        /* Stats Section */
+        .server-stats {
+            background-color: rgba(26, 26, 26, 0.9);
+            padding: 3rem 2rem;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-bottom: 4rem;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .stat {
+            text-align: center;
+            padding: 1.5rem;
+            min-width: 200px;
+        }
+        
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-family: 'Minecraft', sans-serif;
+        }
+        
+        .stat-label {
+            font-size: 1.1rem;
+            color: var(--gray);
+        }
+        
+        /* Gallery Section */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+        
+        .gallery-item {
+            height: 220px;
+            overflow: hidden;
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: scale(0.95);
+            transition: var(--transition);
+        }
+        
+        .gallery-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 50%);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 1;
+        }
+        
+        .gallery-item:hover::before {
+            opacity: 1;
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+        
+        .gallery-caption {
+            position: absolute;
+            bottom: -50px;
+            left: 0;
+            width: 100%;
+            padding: 1rem;
+            color: white;
+            z-index: 2;
+            transition: var(--transition);
+        }
+        
+        .gallery-item:hover .gallery-caption {
+            bottom: 0;
+        }
+        
+        /* Staff Section */
+        .staff-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 2.5rem;
+        }
+        
+        .staff-card {
+            background-color: rgba(26, 26, 26, 0.7);
+            padding: 2rem 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: var(--transition);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(50px);
+            opacity: 0;
+            animation: fadeInUp 0.6s forwards;
+        }
+        
+        .staff-card:nth-child(1) { animation-delay: 0.2s; }
+        .staff-card:nth-child(2) { animation-delay: 0.4s; }
+        .staff-card:nth-child(3) { animation-delay: 0.6s; }
+        .staff-card:nth-child(4) { animation-delay: 0.8s; }
+        .staff-card:nth-child(5) { animation-delay: 1s; }
+        
+        .staff-card:hover {
+            transform: translateY(-10px) !important;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            background-color: rgba(26, 26, 26, 0.9);
+        }
+        
+        .staff-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary);
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .staff-card:hover .staff-avatar {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px var(--primary);
+        }
+        
+        .staff-card h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.4rem;
+        }
+        
+        .staff-role {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        .staff-social {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        
+        .staff-social a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 35px;
+            height: 35px;
+            background-color: var(--dark);
+            color: var(--light);
+            border-radius: 50%;
+            margin: 0 0.3rem;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .staff-social a:hover {
+            background-color: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        /* Rules Section */
+        .rules-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: rgba(26, 26, 26, 0.7);
+            padding: 3rem;
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transform: translateY(50px);
+            opacity: 0;
+            animation: fadeInUp 0.6s 0.2s forwards;
+        }
+        
+        .rules-list {
+            counter-reset: rule-counter;
+        }
+        
+        .rules-list li {
+            margin-bottom: 1.5rem;
+            padding-left: 3rem;
+            position: relative;
+            line-height: 1.7;
+        }
+        
+        .rules-list li::before {
+            counter-increment: rule-counter;
+            content: counter(rule-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: var(--primary);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            padding: 4rem 0 2rem;
+            text-align: center;
+            position: relative;
+        }
+        
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .footer-logo {
+            font-family: 'Minecraft', sans-serif;
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            display: inline-block;
+        }
+        
+        .footer-logo span {
+            color: var(--secondary);
+        }
+        
+        .footer-text {
+            margin-bottom: 2rem;
+            color: var(--gray);
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+        
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            background-color: var(--darker);
+            color: var(--light);
+            border-radius: 50%;
+            margin: 0 0.7rem;
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 1.2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .social-links a:hover {
+            background-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .footer-ip {
+            background-color: var(--darker);
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 1.5rem;
+            margin: 2rem auto;
+            border: 2px solid var(--primary);
+            box-shadow: var(--glow);
+            display: inline-block;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .footer-ip:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px var(--primary);
+        }
+        
+        .copyright {
+            margin-top: 3rem;
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0) translateX(-50%);
+            }
+            40% {
+                transform: translateY(-20px) translateX(-50%);
+            }
+            60% {
+                transform: translateY(-10px) translateX(-50%);
+            }
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 15px rgba(231, 76, 60, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(231, 76, 60, 0);
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 3.5rem;
+            }
+            
+            .section-title {
+                font-size: 2.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 80%;
+                max-width: 300px;
+                height: 100vh;
+                background-color: var(--dark);
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                transition: var(--transition);
+                box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+            }
+            
+            .nav-links.active {
+                right: 0;
+            }
+            
+            .nav-links li {
+                margin: 1.5rem 0;
+            }
+            
+            .hero {
+                min-height: 700px;
+            }
+            
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+            
+            .hero p {
+                font-size: 1.2rem;
+            }
+            
+            .server-ip {
+                font-size: 1.2rem;
+            }
+            
+            .section-title {
+                font-size: 2.2rem;
+            }
+            
+            .server-stats {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .stat {
+                margin-bottom: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .hero-btns {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 250px;
+                margin: 0.5rem 0;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Particle Background -->
+    <div id="particles-js"></div>
+    
+    <!-- Header -->
+    <header id="header">
+        <div class="container">
+            <nav>
+                <a href="#" class="logo">
+                    <img src="gapple_mc_logo-removebg-preview.png" alt="NetherCraft Logo">
+                    Gapple<span>MC</span>
+                </a>
+                
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="#home"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="#features"><i class="fas fa-star"></i> Features</a></li>
+                    <li><a href="#gallery"><i class="fas fa-images"></i> Gallery</a></li>
+                    <li><a href="#staff"><i class="fas fa-users"></i> Staff</a></li>
+                    <li><a href="#rules"><i class="fas fa-book"></i> Rules</a></li>
+                    <li><a href="#" class="btn btn-outline" style="margin-left: 1rem;"><i class="fas fa-play"></i> Join Now</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1 class="minecraft-font">Welcome to GappleMC</h1>
+            <p>The ultimate Minecraft experience with custom gameplay, minigames, and an amazing community!</p>
+            <div class="server-ip" id="serverIp">extreme-02.creepercastle.cloud:25575</div>
+            <div class="hero-btns">
+                <a href="#" class="btn"><i class="fas fa-play"></i> Join Server</a>
+                <a href="#features" class="btn btn-secondary"><i class="fas fa-info-circle"></i> Learn More</a>
+            </div>
+        </div>
+        
+        <div class="scroll-down" id="scrollDown">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features">
+        <div class="container">
+            <h2 class="section-title minecraft-font">Server Features</h2>
+            
+            <div class="server-stats">
+                <div class="stat">
+                    <div class="stat-number" id="playerCount">0</div>
+                    <div class="stat-label">Daily Players</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Uptime</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="gameModes">0</div>
+                    <div class="stat-label">Game Modes</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="pluginsCount">0</div>
+                    <div class="stat-label">Custom Plugins</div>
+                </div>
+            </div>
+            
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-swords"></i></div>
+                    <h3>Survival RPG</h3>
+                    <p>Experience survival with custom RPG elements, quests, skills, and an advanced economy system.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-gamepad"></i></div>
+                    <h3>Minigames</h3>
+                    <p>Play 15+ custom minigames including SkyWars, BedWars, and Hide & Seek with tournaments.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-city"></i></div>
+                    <h3>Creative Plots</h3>
+                    <p>Build anything you imagine with unlimited resources, WorldEdit, and monthly building contests.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-users"></i></div>
+                    <h3>Friendly Community</h3>
+                    <p>Join our 50,000+ member community with active staff and weekly events.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-plug"></i></div>
+                    <h3>Custom Plugins</h3>
+                    <p>Unique gameplay features developed exclusively for our server by our plugin team.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                    <h3>Advanced Protection</h3>
+                    <p>State-of-the-art anti-cheat and moderation tools to ensure fair play for everyone.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery">
+        <div class="container">
+            <h2 class="section-title minecraft-font">Server Gallery</h2>
+            <div class="gallery">
+                <div class="gallery-item">
+                    <img src="https://i.imgur.com/Jc6qTF1.jpg" alt="Spawn Area">
+                    <div class="gallery-caption">Main Spawn</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="https://i.imgur.com/Jc6qTF2.jpg" alt="Survival World">
+                    <div class="gallery-caption">Survival RPG</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="https://i.imgur.com/Jc6qTF3.jpg" alt="SkyWars Arena">
+                    <div class="gallery-caption">SkyWars Arena</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="https://i.imgur.com/Jc6qTF4.jpg" alt="Creative Builds">
+                    <div class="gallery-caption">Creative Builds</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="https://i.imgur.com/Jc6qTF5.jpg" alt="Community Event">
+                    <div class="gallery-caption">Community Event</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="https://i.imgur.com/Jc6qTF6.jpg" alt="Custom Minigame">
+                    <div class="gallery-caption">Custom Minigame</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Staff Section -->
+    <section id="staff">
+        <div class="container">
+            <h2 class="section-title minecraft-font">Our Staff Team</h2>
+            <div class="staff-grid">
+                <div class="staff-card">
+                    <img src="https://mc-heads.net/avatar/Notch/200" alt="Staff Member" class="staff-avatar">
+                    <h3>Notch</h3>
+                    <span class="staff-role">Owner & Founder</span>
+                    <p>Server creator and lead developer</p>
+                    <div class="staff-social">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+                <div class="staff-card">
+                    <img src="https://mc-heads.net/avatar/Dinnerbone/200" alt="Staff Member" class="staff-avatar">
+                    <h3>Dinnerbone</h3>
+                    <span class="staff-role">Head Admin</span>
+                    <p>Manages server operations</p>
+                    <div class="staff-social">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+                <div class="staff-card">
+                    <img src="https://mc-heads.net/avatar/jeb_/200" alt="Staff Member" class="staff-avatar">
+                    <h3>Jeb</h3>
+                    <span class="staff-role">Developer</span>
+                    <p>Creates custom plugins</p>
+                    <div class="staff-social">
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+                <div class="staff-card">
+                    <img src="https://mc-heads.net/avatar/Hero/200" alt="Staff Member" class="staff-avatar">
+                    <h3>Hero</h3>
+                    <span class="staff-role">Senior Mod</span>
+                    <p>Community management</p>
+                    <div class="staff-social">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+                <div class="staff-card">
+                    <img src="https://mc-heads.net/avatar/Steve/200" alt="Staff Member" class="staff-avatar">
+                    <h3>Steve</h3>
+                    <span class="staff-role">Moderator</span>
+                    <p>Player support</p>
+                    <div class="staff-social">
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rules Section -->
+    <section id="rules">
+        <div class="container">
+            <h2 class="section-title minecraft-font">Server Rules</h2>
+            <div class="rules-container">
+                <ol class="rules-list">
+                    <li><strong>No hacking/cheating</strong> - Any use of hacked clients, exploits, or unfair advantages will result in a permanent ban with no exceptions.</li>
+                    <li><strong>Be respectful</strong> - No racism, sexism, homophobia, or other forms of discrimination. Treat others how you want to be treated.</li>
+                    <li><strong>No griefing</strong> - Destroying others' builds, stealing items, or any form of griefing is strictly prohibited.</li>
+                    <li><strong>No spamming</strong> - This includes chat spam, command spam, sign spam, or any other disruptive behavior.</li>
+                    <li><strong>No advertising</strong> - Do not promote other servers, websites, or services without staff permission.</li>
+                    <li><strong>Use common sense</strong> - Staff have final say in all rule interpretations and situations not explicitly covered here.</li>
+                    <li><strong>Keep it family-friendly</strong> - No inappropriate builds, skins, usernames, or chat content.</li>
+                    <li><strong>No scamming</strong> - Scamming players out of items, currency, or services is not allowed.</li>
+                    <li><strong>Respect staff decisions</strong> - Arguing with staff in public chat is not permitted. Use /msg for concerns.</li>
+                    <li><strong>Have fun!</strong> - This is a game meant to be enjoyed. Help us maintain a positive community!</li>
+                </ol>
+                
+                <div style="text-align: center; margin-top: 3rem;">
+                    <a href="https://discord.gg/SwWdfjED" class="btn btn-accent"><i class="fas fa-gavel"></i> Appeal a Ban</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">Gapple<span>MC</span></div>
+                <p class="footer-text">The ultimate Minecraft experience 2025</p>
+                
+                <div class="footer-ip" id="footerIp">extreme-02.creepercastle.cloud:25575</div>
+                
+                <div class="social-links">
+                    <a href="https://discord.com/channels/1281863152513843271/1281863153768206444/1355212849450057788" aria-label="Discord"><i class="fab fa-discord"></i></a> 
+                    <a href="https://www.youtube.com/@akhilplayztelugu4949" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.instagram.com/narra.akhil.7102/" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                </div>
+                
+                
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            mobileMenuBtn.innerHTML = navLinks.classList.contains('active') ? 
+                '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+        });
+        
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+            });
+        });
+        
+        // Scroll to sections
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Scroll down button
+        document.getElementById('scrollDown').addEventListener('click', () => {
+            window.scrollTo({
+                top: document.getElementById('features').offsetTop - 80,
+                behavior: 'smooth'
+            });
+        });
+        
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+        
+        // Copy server IP
+        const serverIps = document.querySelectorAll('.server-ip, .footer-ip');
+        serverIps.forEach(ip => {
+            ip.addEventListener('click', () => {
+                const textToCopy = ip.textContent;
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalText = ip.textContent;
+                    ip.textContent = 'Copied to clipboard!';
+                    ip.style.boxShadow = '0 0 25px var(--primary)';
+                    
+                    setTimeout(() => {
+                        ip.textContent = originalText;
+                        ip.style.boxShadow = 'var(--glow)';
+                    }, 2000);
+                });
+            });
+        });
+        
+        // Animate stats counting
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+        
+        // Start animations when elements are in view
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    if (entry.target.id === 'playerCount') {
+                        animateValue('playerCount', 0, 1500, 2000);
+                        animateValue('gameModes', 0, 10, 1500);
+                        animateValue('pluginsCount', 0, 50, 2500);
+                    }
+                    entry.target.classList.add('animated');
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        document.querySelectorAll('.feature-card, .staff-card, .rules-container, #playerCount, #gameModes, #pluginsCount').forEach(el => {
+            observer.observe(el);
+        });
+        
+        // Initialize particle.js with red theme
+        particlesJS('particles-js', {
+            "particles": {
+                "number": {
+                    "value": 80,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#e74c3c"
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#000000"
+                    },
+                    "polygon": {
+                        "nb_sides": 5
+                    }
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": false,
+                    "anim": {
+                        "enable": false,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 3,
+                    "random": true,
+                    "anim": {
+                        "enable": false,
+                        "speed": 40,
+                        "size_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#e74c3c",
+                    "opacity": 0.4,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 2,
+                    "direction": "none",
+                    "random": false,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": {
+                        "enable": false,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "grab"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": {
+                        "distance": 140,
+                        "line_linked": {
+                            "opacity": 1
+                        }
+                    },
+                    "bubble": {
+                        "distance": 400,
+                        "size": 40,
+                        "duration": 2,
+                        "opacity": 8,
+                        "speed": 3
+                    },
+                    "repulse": {
+                        "distance": 200,
+                        "duration": 0.4
+                    },
+                    "push": {
+                        "particles_nb": 4
+                    },
+                    "remove": {
+                        "particles_nb": 2
+                    }
+                }
+            },
+            "retina_detect": true
+        });
+        // Secret maintenance trigger (Ctrl+Alt+Shift+M)
+document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.altKey && e.shiftKey && e.code === 'KeyM') {
+      const today = new Date();
+      const secretCode = today.getDate() + today.getMonth() + "GMC"; 
+      // Example: On 15th June → "156GMC"
+      
+      const input = prompt("⚙️ Enter daily maintenance code:");
+      if (input === secretCode) {
+        fetch('/.well-known/toggle', { method: 'POST' })
+          .then(() => {
+            localStorage.setItem('maintenance_redirect', 'true');
+            alert("Mode changed! Refreshing...");
+            setTimeout(() => location.reload(), 1500);
+          });
+      }
+    }
+  });
+  
+  // Auto-redirect checker (add to all pages)
+  if (localStorage.getItem('maintenance_redirect') === 'true') {
+    fetch('/maintenance.html')
+      .then(r => r.status === 200 && (location.href = '/maintenance.html'));
+  }
+    </script>
+    <!-- Add this at the TOP of your index.html -->
+<script>
+    if (localStorage.getItem('maintenanceMode') === 'true') {
+      window.location.href = "maintenance.html";
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GappleMC - Maintenance Control</title>
+    <link href="https://fonts.googleapis.com/css2?family=Minecraft&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #e74c3c;
+            --primary-dark: #c0392b;
+            --secondary: #f39c12;
+            --dark: #1a1a1a;
+            --light: #ecf0f1;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--dark);
+            color: var(--light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            background-image: url('https://i.imgur.com/Jc6qTF2.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .admin-container {
+            background-color: rgba(26, 26, 26, 0.95);
+            border-radius: 12px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            border: 3px solid var(--primary);
+            box-shadow: 0 0 25px var(--primary);
+        }
+        
+        .logo {
+            font-family: 'Minecraft', sans-serif;
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            text-shadow: 3px 3px 0 #000;
+        }
+        
+        .logo span {
+            color: var(--secondary);
+        }
+        
+        .status-display {
+            background-color: rgba(231, 76, 60, 0.2);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 0.5rem;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e67e22;
+        }
+        
+        #currentStatus {
+            font-size: 1.3rem;
+            margin-top: 1rem;
+            color: var(--secondary);
+            font-weight: bold;
+        }
+        
+        .password-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        input[type="password"] {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid var(--primary);
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            width: 100%;
+            max-width: 300px;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="logo">Gapple<span>MC</span></div>
+        <h1>Maintenance Mode Control</h1>
+        
+        <div class="status-display">
+            <i class="fas fa-server fa-3x" style="color: var(--secondary); margin-bottom: 1rem;"></i>
+            <h2>Current Server Status</h2>
+            <div id="currentStatus">Checking...</div>
+        </div>
+        
+        <div id="adminControls" style="display: none;">
+            <button class="btn" id="enableBtn">
+                <i class="fas fa-tools"></i> Enable Maintenance
+            </button>
+            <button class="btn btn-secondary" id="disableBtn">
+                <i class="fas fa-check-circle"></i> Disable Maintenance
+            </button>
+            <p style="margin-top: 2rem; opacity: 0.8;">
+                <i class="fas fa-info-circle"></i> Changes may take 1-2 minutes to reflect
+            </p>
+        </div>
+        
+        <div class="password-section" id="passwordSection">
+            <h3>Admin Authentication</h3>
+            <input type="password" id="adminPassword" placeholder="Enter admin password">
+            <button class="btn" onclick="checkPassword()">
+                <i class="fas fa-lock"></i> Unlock Controls
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Configuration - CHANGE THESE!
+        const ADMIN_PASSWORD = "GappleMC@123"; // Set your secure password
+        const MAINTENANCE_PAGE = "maintenance.html"; // Your maintenance page filename
+        
+        // Password check
+        function checkPassword() {
+            const input = document.getElementById('adminPassword').value;
+            if (input === ADMIN_PASSWORD) {
+                document.getElementById('adminControls').style.display = 'block';
+                document.getElementById('passwordSection').style.display = 'none';
+                updateStatus();
+            } else {
+                alert("Incorrect password!");
+            }
+        }
+        
+        // Status checker
+        function updateStatus() {
+            // This checks if maintenance.html exists as the main page
+            fetch(window.location.href.includes('github.io') ? 
+                '/maintenance.html' : MAINTENANCE_PAGE)
+                .then(response => {
+                    const isMaintenance = response.status === 200;
+                    document.getElementById('currentStatus').innerHTML = 
+                        isMaintenance ? 
+                        '<span style="color:#e74c3c">MAINTENANCE MODE ACTIVE</span>' : 
+                        '<span style="color:#2ecc71">NORMAL OPERATION</span>';
+                })
+                .catch(() => {
+                    document.getElementById('currentStatus').innerHTML = 
+                        '<span style="color:#2ecc71">NORMAL OPERATION</span>';
+                });
+        }
+        
+        // Toggle functions
+        document.getElementById('enableBtn').addEventListener('click', () => {
+            if (confirm("Enable maintenance mode? This will redirect all visitors to the maintenance page.")) {
+                // For GitHub Pages - manual step required
+                alert("To enable maintenance mode:\n\n1. Go to your GitHub repo settings\n2. Switch the GitHub Pages branch to 'gh-pages'\n3. Ensure maintenance.html is your index file");
+                // For actual implementation you'd need a backend service
+            }
+        });
+        
+        document.getElementById('disableBtn').addEventListener('click', () => {
+            if (confirm("Disable maintenance mode? The main website will be accessible again.")) {
+                alert("To disable maintenance mode:\n\n1. Go to your GitHub repo settings\n2. Switch the GitHub Pages branch back to 'main'\n3. Ensure index.html is your main file");
+            }
+        });
+        
+        // Uncomment for auto-status check (may cause CORS errors on GitHub Pages)
+        // updateStatus();
+    </script>
+</body>
+</html>
