@@ -14,22 +14,34 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Critical for file history
+          fetch-depth: 0  # Important for file history
+
+      - name: Verify files exist
+        run: |
+          ls -la
+          if [ ! -f maintenance.html ]; then
+            echo "::error::maintenance.html is missing!"
+            exit 1
+          fi
+          if [ ! -f index.html ]; then
+            echo "::error::index.html is missing!"
+            exit 1
+          fi
 
       - name: Toggle maintenance mode
         run: |
           if ${{ inputs.enable }}; then
             echo "ENABLING maintenance"
-            mv maintenance.html index.html
+            cp maintenance.html index.html
           else
             echo "DISABLING maintenance"
-            git restore --source=HEAD --staged --worktree -- index.html
+            git checkout HEAD -- index.html
           fi
 
       - name: Commit changes
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git add .
+          git add index.html
           git commit -m "Maintenance mode ${{ inputs.enable && 'enabled' || 'disabled' }} [skip ci]"
           git push
