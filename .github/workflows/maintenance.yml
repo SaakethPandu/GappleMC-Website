@@ -7,8 +7,8 @@ on:
         type: boolean
         required: true
 
-permissions:  # Add this section
-  contents: write
+permissions:
+  contents: write  # This is the key line that fixes the 403 error
 
 jobs:
   toggle:
@@ -16,15 +16,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Required for file history
+          fetch-depth: 0  # Required for git history
 
       - name: Toggle Mode
         run: |
           if ${{ inputs.enable }}; then
-            echo "ENABLING maintenance"
+            echo "🛠️ Enabling maintenance mode"
             cp maintenance.html index.html
           else
-            echo "DISABLING maintenance"
+            echo "✅ Disabling maintenance mode"
             git restore --source=HEAD -- index.html
           fi
 
@@ -33,5 +33,5 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add index.html
-          git commit -m "Maintenance ${{ inputs.enable && 'ON' || 'OFF' }} [skip ci]"
+          git commit -m "Maintenance ${{ inputs.enable && 'ENABLED' || 'DISABLED' }} [skip ci]"
           git push
