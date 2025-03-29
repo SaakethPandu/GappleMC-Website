@@ -1,0 +1,25 @@
+name: Maintenance Toggle
+on:
+  workflow_dispatch:
+    inputs:
+      enable:
+        description: 'Enable maintenance?'
+        type: boolean
+        required: true
+
+jobs:
+  toggle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          if ${{ inputs.enable }}; then
+            mv maintenance.html index.html
+          else
+            git checkout main -- index.html
+          fi
+      - run: |
+          git config --global user.name "GitHub Actions"
+          git add .
+          git commit -m "Maintenance ${{ inputs.enable && 'enabled' || 'disabled' }}"
+          git push
