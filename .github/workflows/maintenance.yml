@@ -3,23 +3,33 @@ on:
   workflow_dispatch:
     inputs:
       enable:
-        description: 'Enable maintenance?'
-        type: boolean
+        description: 'Enable maintenance mode?'
         required: true
+        type: boolean
 
 jobs:
   toggle:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - run: |
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Critical for file history
+
+      - name: Toggle maintenance mode
+        run: |
           if ${{ inputs.enable }}; then
+            echo "ENABLING maintenance"
             mv maintenance.html index.html
           else
-            git checkout main -- index.html
+            echo "DISABLING maintenance"
+            git restore --source=HEAD --staged --worktree -- index.html
           fi
-      - run: |
+
+      - name: Commit changes
+        run: |
           git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
           git add .
-          git commit -m "Maintenance ${{ inputs.enable && 'enabled' || 'disabled' }}"
+          git commit -m "Maintenance mode ${{ inputs.enable && 'enabled' || 'disabled' }} [skip ci]"
           git push
