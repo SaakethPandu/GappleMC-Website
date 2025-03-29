@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       enable:
-        description: 'Enable maintenance?'
+        description: 'Enable maintenance mode?'
         type: boolean
         required: true
 
@@ -16,22 +16,49 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Required for git history
+
+      - name: Check current mode
+        id: check
+        run: |
+          # Compare files to determine if change is needed
+          if ${{ inputs.enable }}; then
+            if cmp -s maintenance.html index.html; then
+              echo "Maintenance mode already active"
+              echo "change_needed=false" >> $GITHUB_OUTPUT
+            else
+              echo "change_needed=true" >> $GITHUB_OUTPUT
+            fi
+          else
+            if git diff --quiet HEAD -- index.html; then
+              echo "Normal mode already active"
+              echo "change_needed=false" >> $GITHUB_OUTPUT
+            else
+              echo "change_needed=true" >> $GITHUB_OUTPUT
+            fi
+          fi
 
       - name: Toggle Mode
+        if: steps.check.outputs.change_needed == 'true'
         run: |
           if ${{ inputs.enable }}; then
-            echo "🛠️ Enabling maintenance"
+            echo "🛠️ Enabling maintenance mode"
             cp maintenance.html index.html
           else
-            echo "✅ Disabling maintenance"
-            git restore --source=HEAD -- index.html
+            echo "✅ Disabling maintenance mode"
+            git checkout HEAD -- index.html
           fi
 
       - name: Commit Changes
+        if: steps.check.outputs.change_needed == 'true'
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add index.html
           git commit -m "Maintenance ${{ inputs.enable && 'ENABLED' || 'DISABLED' }} [skip ci]"
           git push
+
+      - name: Skip Commit
+        if: steps.check.outputs.change_needed == 'false'
+        run: |
+          echo "No changes needed - skipping commit"
